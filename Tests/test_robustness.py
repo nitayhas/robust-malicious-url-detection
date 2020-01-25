@@ -2,7 +2,7 @@
 
 ##############################################
 # Author: Nitay Hason
-# Check features robustness
+# Check feature robustness
 ##############################################
 
 import itertools

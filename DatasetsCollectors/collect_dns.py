@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+
+##############################################
+# Author: Nitay Hason
+# Collect DNS data by url csv file
+##############################################
+
 import time
 import datetime
 import schedule

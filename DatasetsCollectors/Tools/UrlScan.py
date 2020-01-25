@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+
+##############################################
+# urlscan.io data collector class
+##############################################
+
 from __future__ import print_function
 import requests,json
 

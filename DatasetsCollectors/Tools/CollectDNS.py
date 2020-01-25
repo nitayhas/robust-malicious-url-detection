@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+##############################################
+# Author: Nitay Hason
+# DNS collector class
+##############################################
+
 import schedule
 import time
 import random

@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+
+##############################################
+# Author: Nitay Hason
+# Packet sniffer in order to fetch the appropriate data.
+##############################################
+
 from scapy.all import *
 from threading import Thread, Event, Lock
 

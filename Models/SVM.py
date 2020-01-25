@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+##############################################
+# Author: Nitay Hason
+# SVM class
+##############################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 import time
