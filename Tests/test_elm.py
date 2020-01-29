@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 import time
+import random
 
 from Models.ELM import ELMClassifier
 
@@ -23,27 +24,41 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import KFold
 
 
-y_column_idx   = 17
 features_check = {
 	"base": {
-		"features": [1,2,3,4,5,6,7,8,9],
-		"C"       : 0.001
+		"features"     : [1,2,3,4,5,6,7,8,9],
+		"C"            : 0.001,
+		"n_hidden"     : 50,
+		"y_column_idx" : 10,
+		"feature_file" : "../Datasets/features_extractions/base_(all).csv"
 	},
 	"base_robust": {
-		"features": [2,6,8,9],
-		"C"       : 0.001
+		"features"     : [2,6,8,9],
+		"C"            : 0.001,
+		"n_hidden"     : 10,
+		"y_column_idx" : 10,
+		"feature_file" : "../Datasets/features_extractions/base_(all).csv"
 	},
 	"all": {
-		"features": [1,2,3,4,5,6,7,8,9,10,11,13,15],
-		"C"       : 100
+		"features"     : [1,2,3,4,5,6,7,8,9,10,11,13,15],
+		"C"            : 50,
+		"n_hidden"     : 150,
+		"y_column_idx" : 17,
+		"feature_file" : "../Datasets/features_extractions/median_9_2_(25-75)_vt_include.csv"
 	},
 	"novel": {
-		"features": [10,11,13,15],
-		"C"       : 0.004
+		"features"     : [10,11,13,15],
+		"C"            : 0.004,
+		"n_hidden"     : 50,
+		"y_column_idx" : 17,
+		"feature_file" : "../Datasets/features_extractions/median_9_2_(25-75)_vt_include.csv"
 	},
 	"hybrid_robust": {
-		"features": [2,6,8,9,10,11,13,15],
-		"C"       : 0.01
+		"features"     : [2,6,8,9,10,11,13,15],
+		"C"            : 0.01,
+		"n_hidden"     : 100,
+		"y_column_idx" : 17,
+		"feature_file" : "../Datasets/features_extractions/median_9_2_(25-75)_vt_include.csv"
 	}
 }
 
@@ -51,10 +66,8 @@ features_check = {
 model_name        = "elm"
 features_to_check = ["base","base_robust","all","novel","hybrid_robust"]
 
-
 threshold       = 0.5
 learning_rate   = 0.001
-n_hidden		= 100
 n_splits		= 10
 test_size		= 0.25
 
@@ -65,8 +78,17 @@ features_file      = os.path.join(path, features_file_name)
 
 for features_set in features_to_check:
 	print("\n\nChecking features - %s" % (features_set))
-	train  = pd.read_csv(features_file)
-	use_columns = features_check[features_set]["features"]
+	features_file = os.path.join(path, features_check[features_set]["feature_file"])
+	y_column_idx  = features_check[features_set]["y_column_idx"]
+	n_hidden      = features_check[features_set]["n_hidden"]
+	train         = pd.read_csv(features_file)
+	######## Append artificial data by number of consecutive characters feature ########
+	if 2 in features_check[features_set]["features"]:
+		mal         = train[train[train.columns[y_column_idx]]==1].sample(500).copy()
+		mal["2"]    = mal["2"].apply(lambda x:x*random.randint(3,9))
+		train = train.append(mal, ignore_index=True)
+	######################################## END #######################################
+	use_columns   = features_check[features_set]["features"]
 	use_columns.append(y_column_idx)
 
 	train = train[train.columns[use_columns]]

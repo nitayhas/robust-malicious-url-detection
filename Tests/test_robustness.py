@@ -13,8 +13,7 @@ import time
 import random
 
 from Tools.FeaturesExtraction import FeaturesExtraction
-from Models.Supervised.NeuralNetwork import NeuralNetwork
-from Graphs.HeatMap import HeatMap
+from Models.NeuralNetwork import NeuralNetwork
 from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -30,14 +29,14 @@ def to_percent(y, position):
 
 features = {
 	1 : "(a) Length of domain",
-	2 : "(b) Number of consecutive characters",
+	2 : "(b) * Number of consecutive characters",
 	3 : "(c) Entropy of domain",
 	4 : "(d) Number of IP addresses",
 	5 : "(e) Distinct geolocations of the IP addresses",
-	6 : "(f) Average TTL value",
+	6 : "(f) * Mean TTL value",
 	7 : "(g) Standard deviation of TTL",
-	8 : "(h) Life time of domain",
-	9 : "(i) Active time of domain",
+	8 : "(h) * Life time of domain",
+	9 : "(i) * Active time of domain",
 	10: "(j) Communication Countries Rank",
 	11: "(k) Communication ASNs Rank",
 	12: "Number of DNS Records",
@@ -47,27 +46,37 @@ features = {
 	16: "SSL Certificate is Valid"
 }
 
-y_column_idx   = 17 # Label column index
+# y_column_idx   = 17 # Label column index
 features_check = {  # Feautres sets, include manipulation options
 	"base": {
 		"features"        : [1,2,3,4,5,6,7,8,9],
-		"change_features" : [[0,list(np.arange(6,30,1))],[1,list(np.array(np.arange(1.,10.,1.))[::-1])],[2,list(np.arange(2.0,15.25,0.25))],[3,list(np.arange(1.,31.0,1.0))],[4,list(np.arange(1.,11.,1))],[5,list(np.arange(0,60001,10000))],[6,list(np.arange(0,60001,10000))],[7,list(np.arange(1,21,1))],[8,list(np.arange(0,21,1))]]
+		"y_column_idx"    : 10,
+		"change_features" : [[0,list(np.arange(6,30,1))],[1,list(np.array(np.arange(1.,10.,1.))[::-1])],[2,list(np.arange(2.0,15.25,0.25))],[3,list(np.arange(1.,31.0,1.0))],[4,list(np.arange(1.,11.,1))],[5,list(np.arange(0,60001,10000))],[6,list(np.arange(0,60001,10000))],[7,list(np.arange(1,21,1))],[8,list(np.arange(0,21,1))]],
+		"feature_file"    : "../Datasets/features_extractions/base_(all).csv"
 	},
 	"base_robust": {
 		"features"        : [2,6,8,9],
-		"change_features" : [[0,list(np.array(np.arange(1.,10.,1.))[::-1])],[1,list(np.arange(1,60001,10000))],[2,list(np.arange(1,21,1))],[3,list(np.arange(0,21,1))]]
+		"y_column_idx"    : 10,
+		"change_features" : [[0,list(np.array(np.arange(1.,10.,1.))[::-1])],[1,list(np.arange(1,60001,10000))],[2,list(np.arange(1,21,1))],[3,list(np.arange(0,21,1))]],
+		"feature_file"    : "../Datasets/features_extractions/base_(all).csv"
 	},
 	"all": {
 		"features"        : [1,2,3,4,5,6,7,8,9,10,11,13,15],
-		"change_features" : [[0,list(np.arange(6,30,1))],[1,list(np.array(np.arange(1.,10.,1.))[::-1])],[2,list(np.arange(2.0,15.25,0.25))],[3,list(np.arange(1.,31.0,1.0))],[4,list(np.arange(1.,11.,1))],[5,list(np.arange(0,60001,10000))],[6,list(np.arange(0,60001,10000))],[7,list(np.arange(1,21,1))],[8,list(np.arange(0,21,1))],[9,list(np.arange(0,4051,90))],[10,list(np.arange(0,720001,3000))],[11,list(np.arange(0,100,2))],[12,list(np.arange(0,15810000,100000))]]
+		"y_column_idx"    : 17,
+		"change_features" : [[0,list(np.arange(6,30,1))],[1,list(np.array(np.arange(1.,10.,1.))[::-1])],[2,list(np.arange(2.0,15.25,0.25))],[3,list(np.arange(1.,31.0,1.0))],[4,list(np.arange(1.,11.,1))],[5,list(np.arange(0,60001,10000))],[6,list(np.arange(0,60001,10000))],[7,list(np.arange(1,21,1))],[8,list(np.arange(0,21,1))],[9,list(np.arange(0,4051,90))],[10,list(np.arange(0,720001,3000))],[11,list(np.arange(0,100,2))],[12,list(np.arange(0,15810000,100000))]],
+		"feature_file"    : "../Datasets/features_extractions/median_9_2_(75-25)_vt_include.csv"
 	},
 	"novel": {
 		"features"        : [10,11,13,15],
-		"change_features" : [[0,list(np.arange(0,4051,90))],[1,list(np.arange(0,720001,3000))],[2,list(np.arange(0,100,2))],[3,list(np.arange(0,15810000,100000))]]
+		"y_column_idx"    : 17,
+		"change_features" : [[0,list(np.arange(0,4051,90))],[1,list(np.arange(0,720001,3000))],[2,list(np.arange(0,100,2))],[3,list(np.arange(0,15810000,100000))]],
+		"feature_file"    : "../Datasets/features_extractions/median_9_2_(75-25)_vt_include.csv"
 	},
 	"robust": {
 		"features"        : [2,6,8,9,10,11,13,15],
-		"change_features" : [[0,list(np.array(np.arange(1.,10.,1.))[::-1])],[1,list(np.arange(0,60001,10000))],[2,list(np.arange(1,21,1))],[3,list(np.arange(0,21,1))],[4,list(np.arange(0,4051,90))],[5,list(np.arange(0,720001,3000))],[6,list(np.arange(0,100,2))],[7,list(np.arange(0,15810000,100000))]]
+		"y_column_idx"    : 17,
+		"change_features" : [[0,list(np.array(np.arange(1.,10.,1.))[::-1])],[1,list(np.arange(0,60001,10000))],[2,list(np.arange(1,21,1))],[3,list(np.arange(0,21,1))],[4,list(np.arange(0,4051,90))],[5,list(np.arange(0,720001,3000))],[6,list(np.arange(0,100,2))],[7,list(np.arange(0,15810000,100000))]],
+		"feature_file"    : "../Datasets/features_extractions/median_9_2_(75-25)_vt_include.csv"
 	}
 }
 
@@ -75,66 +84,54 @@ features_check = {  # Feautres sets, include manipulation options
 # ['http://paypal.co.uk.userpph0v45y2pp.settingsppup.com/id1/?eml=&amp;cmd=form_submit&amp;dispatch=34xsd45423d1zmw241234zxadvzvh24af23d60', 16,2,0.25,1,1,300.0,0.0,2,0]
 
 model_name        = "ann"
-features_to_check = "robust"
+features_to_check = "base"
+
 
 path              = os.path.dirname(os.path.abspath(__file__))
-model_path        = os.path.join(path, ("non_robust/%s_model_%s" % (model_name,features_to_check)))
-feature_file      = os.path.join(path, "../Datasets/features_extractions/median_9_2_(75-25)_vt_include.csv")
+model_path        = os.path.join(path, ("%s_model_%s" % (model_name,features_to_check)))
+feature_file      = os.path.join(path, features_check[features_to_check]["feature_file"])
 rt_countries_file = os.path.join(path, "../Datasets/ratio_tables/rt_countries_(75-25).csv")
 rt_asns_file      = os.path.join(path, "../Datasets/ratio_tables/rt_asns_(75-25).csv")
 
+y_column_idx = features_check[features_to_check]["y_column_idx"]
 
 # Flags
-recreate_model     = False # If model not created it will be concidered as True
-by_file            = True
+recreate_model     = False # If model not created this will be concidered as True
 correlation_matrix = False
 point_graphs       = True
 
 # Hyperparameters
-num_malicious_samp = 500
-thresholds         = [0.9]
-poly_degree        = 2
+num_malicious_samp = 1000
+thresholds         = [0.5]
+min_threshold	   = 0.9
+poly_degree        = 3
 training_epochs    = 20000
-learning_rate      = 0.001
+learning_rate      = 0.01
 layers             = [(80,"relu"),(80,"relu"),(80,"leakyrelu"),(1,'sigmoid')]
 
 start_time = time.time()
 print("Start preprocessing")
-if by_file:
-	df_features  = pd.read_csv(feature_file)
-	######## Append artificial data by number of consecutive characters feature ########
+
+df_features  = pd.read_csv(feature_file)
+####### Append artificial data in order to fix the number of consecutive characters feature ########
+if recreate_model:
 	if 2 in features_check[features_to_check]["features"]:
-		mal         = df_features[df_features[df_features.columns[y_column_idx]]==1].copy()
+		mal         = df_features[df_features[df_features.columns[y_column_idx]]==1].sample(500).copy()
 		mal["2"]    = mal["2"].apply(lambda x:x*random.randint(3,9))
 		df_features = df_features.append(mal, ignore_index=True)
-	######################################## END #######################################
+####################################### END #######################################
 
-	malicious_sample      = df_features[df_features[df_features.columns[y_column_idx]]==1].sample(num_malicious_samp).copy()
-	malicious_sample_urls = malicious_sample['0']
-	malicious_sample      = malicious_sample[df_features.columns[features_check[features_to_check]["features"]]]
-else: # Else check custom malicious sample
-	####################### Custom Data #######################
-	malicious_sample_urls = "oococococo.cc"
-	features              = {0:malicious_sample_urls,1:"['199.191.50.185']",2:"[300]",3:"['40034']",4:"['VG']",5:"['199.191.50.185']",6:"[]",7:"[]",8:"['Apache']",9:"[1521065123.0, 1584223523.0, 1551781985.0]",10:1}
-	########################### END ###########################
+malicious_sample      = df_features[df_features[df_features.columns[y_column_idx]]==1].sample(num_malicious_samp).copy()
+malicious_sample_urls = malicious_sample['0']
+malicious_sample      = malicious_sample[df_features.columns[features_check[features_to_check]["features"]]]
 
-	df_features         = pd.DataFrame.from_dict(features,orient='index')
-	countries_ratios    = pd.read_csv(rt_countries_file, sep=';')
-	asns_ratios         = pd.read_csv(rt_asns_file, sep=';')
-	features_extraction = FeaturesExtraction(df_features.T, countries_ratios =countries_ratios, asns_ratios=asns_ratios, countries_threshold=9, asns_threshold=2,domian_idx=0,ips_idx=1,ttls_idx=2,asns_idx=3,countries_idx=4,dates_idx=9,y_idx=10, verbose=2)
-	features_extraction.extract()
-
-	malicious_sample    = features_extraction.df_extracted.copy()
-	malicious_sample    = malicious_sample[df_features.columns[features_check[features_to_check]["features"]]]
-	y_column_idx        = 12
-
-####### Drop malicious samples in order to not bias the manipulation phase #######
 use_columns = features_check[features_to_check]["features"]
 use_columns.append(y_column_idx)
-if by_file:
-	df_features.drop(index=malicious_sample_urls.index)
-	df_features = df_features[df_features.columns[use_columns]]
-####################################### END ######################################
+########## Drop the manipulation malicious samples from the training phase ##########
+# if recreate_model:
+# 	df_features.drop(index=malicious_sample_urls.index)
+######################################### END #######################################
+df_features = df_features[df_features.columns[use_columns]]
 
 elapsed_time = time.time() - start_time
 print("Preprocessing time: %s" % (time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
@@ -170,7 +167,7 @@ for threshold in thresholds:
 		row_np = np.array([list(row)])
 		pred   = nn.predict_self(row_np)[0][0][0]
 		# Check if not looklike benign at first
-		if pred < threshold:
+		if pred < min_threshold:
 			continue
 		count += 1
 		# Start features manipulation
