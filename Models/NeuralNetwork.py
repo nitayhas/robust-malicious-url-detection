@@ -19,6 +19,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
+
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import log_loss
@@ -32,12 +34,13 @@ from sklearn.metrics import confusion_matrix
 
 
 class NeuralNetwork:
-	def __init__(self, learning_rate = 0.01, training_epochs = 10000, batch_size = 150, threshold = 0.5, test_size = 0.25, degree = 1, drop_columns = [], dataset_path=None, dataset=None):
+	def __init__(self, learning_rate = 0.01, training_epochs = 10000, kfolds=10, batch_size = 150, threshold = 0.5, test_size = 0.25, degree = 1, drop_columns = [], dataset_path=None, dataset=None):
 		# Hyperparameters
 		self.dataset		 = dataset
 		self.dataset_path    = dataset_path
 		self.learning_rate   = learning_rate
 		self.training_epochs = training_epochs
+		self.kfolds          = kfolds
 		self.batch_size      = batch_size
 		self.threshold       = threshold
 		self.test_size       = test_size
@@ -130,9 +133,17 @@ class NeuralNetwork:
 		self.model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['acc'])
 		callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=100, verbose=0, mode='auto')
 
+		kf = KFold(n_splits=self.kfolds, random_state=None, shuffle=False)
+		kf.get_n_splits(self.X)
+
 		print("Start training")
 		start   = time.time()
-		self.model_history = self.model.fit(self.X_train, self.y_train, epochs=self.training_epochs, batch_size=self.batch_size, validation_split=self.test_size, callbacks=[callback], verbose=verbose)
+		for train_index, test_index in kf.split(self.idx_train):
+			X_train_fold, X_test_fold = self.X_train[train_index], self.X_train[test_index]
+			y_train_fold, y_test_fold = self.y_train[train_index], self.y_train[test_index]
+
+			self.model_history = self.model.fit(X_train_fold, y_train_fold, epochs=self.training_epochs, batch_size=self.batch_size, validation_data=(X_test_fold,y_test_fold), callbacks=[callback], verbose=verbose)
+		# self.model_history = self.model.fit(self.X_train, self.y_train, epochs=self.training_epochs, batch_size=self.batch_size, validation_split=self.test_size, callbacks=[callback], verbose=verbose)
 		end = time.time()
 		print("\nTraining time:")
 		print(end - start)

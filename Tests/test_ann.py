@@ -57,6 +57,7 @@ threshold       = 0.5
 learning_rate   = 0.001
 training_epochs = 20000
 degree          = 2
+n_splits		= 10
 test_size		= 0.25
 
 path               = os.path.dirname(os.path.abspath(__file__))
@@ -79,11 +80,11 @@ for features_set in features_to_check:
 
 	new_df = df[df.columns[use_columns]]
 	new_df = np.array(new_df.values)
-	nn     = NeuralNetwork(dataset=new_df, learning_rate=learning_rate, threshold=threshold, training_epochs=training_epochs, degree=degree)
+	nn     = NeuralNetwork(dataset=new_df, learning_rate=learning_rate, threshold=threshold, kfolds=n_splits, training_epochs=training_epochs, degree=degree)
 	nn.build()
-	nn.train()
+	nn.train(verbose=1)
 	scores = nn.predict()
-	nn.save_model("ann_model_base")
+	nn.save_model("ann_model_base_t")
 
 	end   = time.time()
 	print("\nTraining time:")
