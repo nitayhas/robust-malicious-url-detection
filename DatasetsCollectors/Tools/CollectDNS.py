@@ -16,7 +16,7 @@ import logging
 import os
 import pandas as pd
 import numpy as np
-from Sniffer import Sniffer
+from .Sniffer import Sniffer
 from scapy.all import DNS, DNSRR
 from time import sleep
 
