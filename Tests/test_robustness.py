@@ -46,6 +46,25 @@ features = {
 	16: "SSL Certificate is Valid"
 }
 
+features = {
+	"1" : "Length of domain",
+	"2" : "Number of consecutive characters",
+	"3" : "Entropy of domain",
+	"4" : "Number of IP addresses",
+	"5" : "Distinct geolocations of the IP addresses",
+	"6" : "Mean TTL value",
+	"7" : "Standard deviation of TTL",
+	"8" : "Life time of domain",
+	"9" : "Active time of domain",
+	'10': "Communication Countries Rank",
+	"11": "Communication ASNs Rank",
+	"12": "Number of DNS Records",
+	'13': "Number of DNS changes by passive DNS",
+	'14': "Number of Subdomains",
+	'15': "Expiration Time of SSL Certificate",
+	'16': "SSL Certificate is Valid"
+}
+
 # y_column_idx   = 17 # Label column index
 features_check = {  # Feautres sets, include manipulation options
 	"base": {
@@ -256,7 +275,7 @@ for threshold in thresholds:
 		top_corr_features          = corrmat.index
 		plt.figure(figsize=(12,8))
 		#plot heat map
-		g=sns.heatmap(df_features[top_corr_features].corr(),annot=True,cmap="RdYlGn")
+		g=sns.heatmap(df_features[top_corr_features].corr(),annot=True,cmap="RdYlGn", fmt='.3f')
 		elapsed_time = time.time() - start_time
 		print("Correlation matrix creation time: %s" % (time.strftime("%H:%M:%S", time.gmtime(elapsed_time))))
 		plt.show()

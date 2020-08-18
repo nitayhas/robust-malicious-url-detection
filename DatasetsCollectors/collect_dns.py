@@ -11,7 +11,7 @@ import schedule
 import threading
 import argparse
 import pandas as pd
-from CollectDNS import CollectDNS
+from Tools.CollectDNS import CollectDNS
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i','--csv_in', help='<Required>CSV input file datatset', required=True)
